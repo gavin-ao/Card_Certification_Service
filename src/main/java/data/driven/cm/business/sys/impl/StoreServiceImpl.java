@@ -31,13 +31,13 @@ public class StoreServiceImpl implements StoreService {
 
     /**
      * 根据用户id 查询数据对象
-     * @param userId 用户 Id
+     * @param manager 用户 Id
      * @return 门店对象
      */
     @Override
-    public StoreEntity getStoreByUserId(String userId) {
-        String sql = "select store_id,user_id,store_name,store_addr,province,city,country from sys_store where user_id = ?";
-        List<StoreEntity> storeList = jdbcBaseDao.queryList(StoreEntity.class,sql,userId);
+    public StoreEntity getStoreByUserId(String manager) {
+        String sql = "select store_id,user_id,store_name,store_addr,province,city,country from sys_store where manager = ?";
+        List<StoreEntity> storeList = jdbcBaseDao.queryList(StoreEntity.class,sql,manager);
         if (storeList != null && storeList.size() > 0){
             return storeList.get(0);
         }

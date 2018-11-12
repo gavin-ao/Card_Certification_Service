@@ -18,9 +18,9 @@ public interface StoreService {
 
     /**
      * 根据用户id 查询数据对象
-     * @param userId 用户 Id
+     * @param manager 用户 Id
      * @return 门店对象
      */
-    public StoreEntity getStoreByUserId(String userId);
+    public StoreEntity getStoreByUserId(String manager);
 
 }
