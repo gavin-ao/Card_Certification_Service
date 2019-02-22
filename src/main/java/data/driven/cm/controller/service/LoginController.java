@@ -38,12 +38,12 @@ public class LoginController {
 //    @Autowired
 //    private WechatStoreVerificationAuthorizationService wechatStoreVerificationAuthorizationService;
 
-    @RequestMapping(path = "/login")
-    public ModelAndView login(){
-        ModelAndView modelAndView = new ModelAndView("/service/login");
-
-        return modelAndView;
-    }
+//    @RequestMapping(path = "/login")
+//    public ModelAndView login(){
+//        ModelAndView modelAndView = new ModelAndView("/service/login");
+//
+//        return modelAndView;
+//    }
 
     @ResponseBody
     @RequestMapping(path = "/execuLogin")
