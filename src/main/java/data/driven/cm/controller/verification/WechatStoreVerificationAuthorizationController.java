@@ -15,6 +15,7 @@ import data.driven.cm.entity.verification.WechatStoreVerificationAuthorizationEn
 import data.driven.cm.util.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -67,13 +68,18 @@ public class WechatStoreVerificationAuthorizationController {
     public JSONObject execuWechatStoreVerificationAuthorization(String sessionID, String userId, String storeId) {
         WechatApiSessionBean wechatApiSessionBean = WechatApiSession.getSessionBean(sessionID);
         try {
-            System.out.println("sessionID "+ sessionID);
-            System.out.println("userId "+ userId);
-            System.out.println("storeId "+ storeId);
-            System.out.println("OpenId "+wechatApiSessionBean.getUserInfo());
-            //增加 如果店id 存在就做update,不存在就insert
-            wechatStoreVerificationAuthorizationService.insertWechatStoreVerificationAuthorization(userId, storeId, wechatApiSessionBean.getUserInfo().getOpenId());
-            return JSONUtil.putMsg(true, "200", "绑定成功");
+//            System.out.println("sessionID "+ sessionID);
+//            System.out.println("userId "+ userId);
+//            System.out.println("storeId "+ storeId);
+//            System.out.println("OpenId "+wechatApiSessionBean.getUserInfo());
+            WechatStoreVerificationAuthorizationEntity wechatStoreVerificationAuthorizationEntity = wechatStoreVerificationAuthorizationService.getEntityByOpenId(wechatApiSessionBean.getUserInfo().getOpenId());
+            if (wechatStoreVerificationAuthorizationEntity == null){
+                //增加 如果店id 存在就做update,不存在就insert
+                wechatStoreVerificationAuthorizationService.insertWechatStoreVerificationAuthorization(userId, storeId, wechatApiSessionBean.getUserInfo().getOpenId());
+                return JSONUtil.putMsg(true, "200", "绑定成功");
+            }else {
+                return putMsg(false,"101","此微信已绑定门店");
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return putMsg(false, "101", "绑定失败");
@@ -134,8 +140,9 @@ public class WechatStoreVerificationAuthorizationController {
                 }else if (rewardActCommandEntity.getBeingUsed() != 1){//使用状态不等于1 或是 Null 就显示优惠信息，否则显示“二维码已使用”
                         RewardActContentEntity rewardActContentEntity = rewardActContentService.getRewardActContentByActAndType(rewardActCommandEntity.getActId(),rewardActCommandEntity.getCommandType());
                         return putMsg(true, "200", rewardActContentEntity.getRemark());
-                }else{
-                    return putMsg(false,"200","二维码已使用");
+                }else{ //如果已使用需要展示优惠信息及已核销
+                    RewardActContentEntity rewardActContentEntity = rewardActContentService.getRewardActContentByActAndType(rewardActCommandEntity.getActId(),rewardActCommandEntity.getCommandType());
+                    return putMsg(false,"200",rewardActContentEntity.getRemark() + ",已核销");
                 }
             }
         }catch (Exception e){
@@ -185,5 +192,11 @@ public class WechatStoreVerificationAuthorizationController {
             return putMsg(false,"101","使用失败");
         }
         return putMsg(false,"101","使用失败");
+    }
+
+    @ResponseBody
+    @RequestMapping(path = "/test")
+    public JSONObject test(){
+        return putMsg(true,"200","测试成功");
     }
 }
